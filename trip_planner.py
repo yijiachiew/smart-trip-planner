@@ -22,9 +22,7 @@ from trip_agents import (
     logistics_agent, 
     finance_agent, 
     attractions_agent, 
-    packing_agent,
-    compiler_agent,
-    edit_agent
+    packing_agent
 )
 
 # Retry config
@@ -76,42 +74,53 @@ research_instruction_agent = LlmAgent(
 )
 
 # 2. Planner Agent
-# Drafts outline and coordinates the Research -> Compile -> Edit flow
+# Drafts outline and coordinates the Research
+# Updated: Removed Compiler and Edit Agents as per request. Returns raw findings to Interactive Agent.
 planner_agent = LlmAgent(
     name="PlannerAgent",
     model=get_model(),
     instruction="""
-    You are the **Planner Agent**. You act as the central brain for the trip planning workflow.
+    You are the **Planner Agent**. You act as the central strategist for the trip planning workflow.
     
     **Workflow**:
-    1.  **Draft Outline**: specific destination, dates, and constraints based on user input.
+    1.  **Draft Outline**: Analyze the user's request (from InteractiveAgent) to define the destination, dates, constraints, and key interests.
     2.  **Research**: Call `ResearchInstructionAgent` to gather detailed information based on your outline.
-    3.  **Compile & Reconcile**: Call `AgentCompiler` with the research findings. Ask it to check for consistency.
-    4.  **Formatting**: Call `EditAgent` with the reconciled plan to generate the final user-facing report.
-    
-    Return the output from the `EditAgent` as your final response.
+    3.  **Verify**: Ensure the research findings are sufficient to answer the user's request. If significant info is missing, refine your request to the ResearchInstructionAgent.
+    4.  **Return**: Return the *comprehensive raw research findings* directly to the InteractiveAgent. Do not summarize them excessively; provide the full details needed for the final report.
     """,
     tools=[
-        AgentTool(research_instruction_agent),
-        AgentTool(compiler_agent),
-        AgentTool(edit_agent)
+        AgentTool(research_instruction_agent)
     ],
 )
 
 # 3. Interactive Agent (Entry Point)
 # User -> Interactive -> Planner
+# Updated: Handles compilation and formatting (previously done by EditAgent)
 interactive_agent = LlmAgent(
     name="InteractiveAgent",
     model=get_model(),
     instruction="""
-    You are the **Interactive Agent**, the user's direct point of contact for trip planning.
+    You are the **Interactive Agent**, the user's direct point of contact and final report generator.
     
-    Your responsibilities:
+    **Responsibilities**:
     1.  **Understand**: Clarify the user's request (Destination, Budget, Purpose, etc.).
-    2.  **Delegate**: Once you have enough information, pass the request to the `PlannerAgent` to generate the full plan.
-    3.  **Relay**: Present the final formatted plan (returned by the PlannerAgent) to the user.
+    2.  **Delegate**: Once you have enough information, pass the request to the `PlannerAgent`.
+    3.  **Compile & Format**: 
+        - Receive the raw research findings from the `PlannerAgent`.
+        - **Synthesize** this information into a cohesive, beautiful Markdown report.
+        - **Reconcile** any inconsistencies (e.g., budget vs costs) in your narrative.
     
-    If the user provides feedback or modifications on an existing plan, pass those back to the PlannerAgent to refine the plan.
+    **MANDATORY FORMATTING REQUIREMENTS for the Final Report**:
+    1.  **Narrative Sections**: Clear, engaging descriptions for Trip Overview, Logistics, Sightseeing, etc.
+    2.  **MASTER PLAN TABLE**: 
+        - This is a MANDATORY final section.
+        - Create a comprehensive Markdown table summarizing the entire trip.
+        - Columns must be: **Category**, **Recommendation/Action**, **Details**, **Link/Source**.
+        - Rows should cover: Visa, Flights, Accommodation, Top Attractions, Packing Essentials, Budget Est.
+        - Ensure every row has a valid link in the Link/Source column.
+    3.  **Links**: Ensure all links provided in the research are preserved and clickable.
+    
+    Do not invent new information. Only format the information provided by the PlannerAgent.
     """,
     tools=[
         AgentTool(planner_agent)
@@ -122,7 +131,7 @@ interactive_agent = LlmAgent(
 trip_coordinator = interactive_agent
 
 async def main():
-    print("✈️ Trip Planner AI System Initialized (Hierarchical Architecture)")
+    print("✈️ Trip Planner AI System Initialized (Streamlined Architecture)")
     
     # Sample User Query
     user_query = "Plan a 2-week work trip to Tokyo, Japan in October. Budget is $3000 USD (excluding flights). I need to work remotely from a co-working space."
