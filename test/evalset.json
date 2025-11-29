@@ -1,0 +1,77 @@
+{
+  "eval_set_id": "trip_planner_evaluation_suite",
+  "eval_cases": [
+    {
+      "eval_id": "london_study_trip",
+      "conversation": [
+        {
+          "user_content": {
+            "parts": [
+              {
+                "text": "Plan a 1-month study trip to London, UK starting in September. I'll be attending UCL. Budget is £2500 for living expenses."
+              }
+            ]
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "MASTER PLAN TABLE"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": "bali_leisure_trip",
+      "conversation": [
+        {
+          "user_content": {
+            "parts": [
+              {
+                "text": "Plan a 10-day vacation to Bali, Indonesia. Interested in nature, temples, and beaches. Budget is $1500 USD total."
+              }
+            ]
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "MASTER PLAN TABLE"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": "tokyo_work_trip_multi_turn",
+      "conversation": [
+        {
+          "user_content": {
+            "parts": [
+              {
+                "text": "Plan a 1-week work trip to Tokyo."
+              }
+            ]
+          }
+        },
+        {
+          "user_content": {
+            "parts": [
+              {
+                "text": "I need to stay in Shinjuku and my budget is $2000. Also I'm a vegetarian."
+              }
+            ]
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "MASTER PLAN TABLE"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
