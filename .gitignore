@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+venv/
+context/
+api/
+test/__pycache__/
