@@ -1,4 +1,3 @@
-
 ***
 
 # Project Write-Up: AI Trip Planner Agent
@@ -19,20 +18,19 @@ Agents are the perfect solution for this problem because trip planning requires 
 *   **Workflow:** A hierarchical agent system can mimic a real-world travel agency, where a "Planner" delegates tasks to specialists and compiles the results.
 
 ### What you created (Architecture)
-I built a **Hierarchical Multi-Agent System** using the `google-adk` framework. The system is designed as a tree structure to manage context and delegation effectively:
+I built a **Hierarchical Multi-Agent System** using the `google-adk` framework. The system is designed as a streamlined tree structure to manage context and delegation effectively. 
 
-1.  **Entry Point (`InteractiveAgent`)**: The user interface that captures the user's intent (Destination, Budget, Purpose).
-2.  **The Brain (`PlannerAgent`)**: The central orchestrator that creates the plan outline and manages the workflow (Research $\rightarrow$ Compile $\rightarrow$ Edit).
-3.  **The Manager (`ResearchInstructionAgent`)**: Breaks down the plan into specific tasks and delegates them to specialists.
+*Note: The original design included separate Compiler and Edit agents, but these were consolidated into the Interactive Agent to optimize for API resource constraints and latency.*
+
+1.  **Entry Point (`InteractiveAgent`)**: The user interface and final report generator. It captures intent, delegates to the Planner, and handles the final compilation and formatting of the Markdown report.
+2.  **The Brain (`PlannerAgent`)**: The central strategist. It drafts the plan outline, delegates research tasks, and verifies that the findings match the user's request before passing them back for formatting.
+3.  **The Manager (`ResearchInstructionAgent`)**: Breaks down the plan into specific tasks and orchestrates the specialists.
 4.  **The Specialists**:
     *   **`ResearchAgent`**: Handles Visas, Safety, and Local Customs.
     *   **`LogisticsAgent`**: Finds Flights, Accommodation, and Transport.
     *   **`FinanceAgent`**: Estimates Budgets, Currency, and Banking needs.
-    *   **`AttractionsAgent`**: Finds Must-sees, Hidden Gems, and purpose-specific spots (e.g., libraries for students).
+    *   **`AttractionsAgent`**: Finds Must-sees, Hidden Gems, and purpose-specific spots.
     *   **`PackingAgent`**: Checks weather and creates gear lists.
-5.  **The Finishers**:
-    *   **`AgentCompiler`**: Aggregates all findings and checks for consistency (e.g., does the budget match the hotel choice?).
-    *   **`EditAgent`**: Formats the final output into a beautiful Markdown report with a "Master Plan Table".
 
 ### Demo
 When you run the application via the CLI (`main.py`):
